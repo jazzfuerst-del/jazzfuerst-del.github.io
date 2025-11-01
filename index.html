@@ -63,6 +63,9 @@
     .bigText{font-size:1.05rem;line-height:1.6;color:var(--fg);background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;text-align:left}
     .plainText{font-size:1.05rem;line-height:1.6;color:var(--fg);text-align:left}
 
+    .destImg{width:100%;border-radius:16px;margin-top:12px;box-shadow:0 8px 24px rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.12);}
+    .destAudio{margin-top:16px;width:100%;}
+
     .confetti{position:absolute;inset:0;pointer-events:none;}
     .confetti i{position:absolute;width:8px;height:14px;border-radius:2px;opacity:0;animation:pop 1.2s ease-out forwards}
     @keyframes pop{0%{transform:translate(var(--x,0),0) rotate(0);opacity:1}100%{transform:translate(var(--x,0),-160px) rotate(1turn);opacity:0}}
@@ -75,6 +78,7 @@
       <h1 id="screenTitle">…</h1>
       <p class="subtitle" id="screenSubtitle">…</p>
 
+      <!-- Écran 1 : Énigme -->
       <section id="screen-riddle" class="section">
         <p class="riddle" id="riddleText">Chargement…</p>
         <div class="inputRow">
@@ -89,13 +93,15 @@
         <div class="msg" id="msg" aria-live="polite"></div>
       </section>
 
+      <!-- Écran 2 : Briefing -->
       <section id="screen-briefing" class="section">
         <div class="bigText" id="briefingText"></div>
-        <button class="btn" style="margin-top:20px;width:100%" id="goToDestination">Suivant</button>
+        <button class="btn" style="margin-top:20px;width:100%" id="goToDestination">Voir la prochaine étape</button>
       </section>
 
+      <!-- Écran 3 : Destination -->
       <section id="screen-destination" class="section">
-        <div class="plainText" id="destinationText"></div>
+        <div class="plainText" id="destinationContent"></div>
         <div class="rowRight">
           <button class="linkLike" id="destHintBtn">Besoin d'un indice ?</button>
         </div>
@@ -107,28 +113,78 @@
   </div>
 
   <script>
+    /*
+      CONFIGURATION DES ÉTAPES
+      Pour chaque étape :
+
+      label: nom affiché dans la bulle violette
+
+      riddleTitle / riddleQuestion / hint / answers  -> écran Énigme
+
+      briefingTitle / briefingText / briefingColor / briefingSize -> écran Briefing
+        - briefingColor et briefingSize sont optionnels
+
+      destinationTitle / destinationText / destinationImage / destinationAudio / destHint -> écran Destination
+        - destinationText     (string)    -> texte simple à afficher
+        - destinationImage    (string URL)-> image à afficher
+        - destinationAudio    (string URL)-> audio à jouer (fichier .mp3 / .m4a ...)
+        Tu peux fournir 0, 1, 2 ou 3 de ces champs.
+        Exemple : juste l'image, ou texte+son, etc.
+    */
+
     const STEPS = {
       "1": {
-        label: "Test",
-        riddleTitle: "Énigme",
+        label: "Le Pont Mystère",
+
+        // Écran énigme
+        riddleTitle: "Énigme #1",
         riddleQuestion: "Je parle sans bouche et j'entends sans oreilles. Je n'ai pas de corps, mais je prends vie avec le vent. Qui suis-je ?",
         hint: "Pense au son qui revient quand tu cries dans une grotte.",
         answers: ["echo", "l'echo", "l echo", "echo."],
 
-        briefingTitle: "Code",
+        // Écran briefing
+        briefingTitle: "Briefing #1",
         briefingText: "Bravo. Voici votre mission secrète : trouvez le mot de passe gravé sous le banc rouge.",
         briefingColor: "#22c55e",
         briefingSize: "1.6rem",
 
-        destinationTitle: "Etape suivante",
+        // Écran destination
+        destinationTitle: "Destination suivante",
         destinationText: "Rendez-vous sous l'arche en pierre près de la fontaine. C'est là-bas que commence l'étape 2.",
+        // destinationImage: "images/indice1.jpg",
+        // destinationAudio: "sons/piste1.mp3",
         destHint: "Cherchez une arche en pierre où le son résonne."
       }
     };
 
-    function normalize(s){return (s||"").toString().trim().toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu,"").replace(/[^a-z0-9'\s.-]/g,"").replace(/\s+/g," ");}
-    function confetti(){const c=document.querySelector('#confetti');c.innerHTML='';const colors=['#7c5cff','#22c55e','#3b82f6','#f59e0b','#ef4444'];for(let i=0;i<40;i++){const el=document.createElement('i');el.style.left=Math.random()*100+'%';el.style.bottom='0';el.style.setProperty('--x',(Math.random()*120-60)+'px');el.style.background=colors[i%colors.length];el.style.animationDelay=(Math.random()*0.35)+'s';c.appendChild(el);}}
+    // ------ utilitaires ------
+    function normalize(s){
+      return (s||"")
+        .toString()
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu,"")
+        .replace(/[^a-z0-9'\s.-]/g,"")
+        .replace(/\s+/g," ");
+    }
 
+    function confetti(){
+      const c=document.querySelector('#confetti');
+      c.innerHTML='';
+      const colors=['#7c5cff','#22c55e','#3b82f6','#f59e0b','#ef4444'];
+      for(let i=0;i<40;i++){
+        const el=document.createElement('i');
+        el.style.left=Math.random()*100+'%';
+        el.style.bottom='0';
+        el.style.setProperty('--x',(Math.random()*120-60)+'px');
+        el.style.background=colors[i%colors.length];
+        el.style.animationDelay=(Math.random()*0.35)+'s';
+        c.appendChild(el);
+      }
+    }
+
+    // ------ récup éléments ------
     const qs=new URLSearchParams(location.search);
     const STEP_KEY=qs.get('step')||"1";
     const STEP=STEPS[STEP_KEY];
@@ -136,18 +192,22 @@
     const stepNameEl=document.querySelector('#stepName');
     const screenTitleEl=document.querySelector('#screenTitle');
     const screenSubtitleEl=document.querySelector('#screenSubtitle');
+
     const scrRiddle=document.querySelector('#screen-riddle');
     const scrBriefing=document.querySelector('#screen-briefing');
     const scrDest=document.querySelector('#screen-destination');
+
     const riddleTextEl=document.querySelector('#riddleText');
     const answerInput=document.querySelector('#answer');
     const submitBtn=document.querySelector('#submitAnswer');
     const attemptsEl=document.querySelector('#attempts');
     const hintBtn=document.querySelector('#hintBtn');
     const msgEl=document.querySelector('#msg');
+
     const briefingTextEl=document.querySelector('#briefingText');
     const goToDestinationBtn=document.querySelector('#goToDestination');
-    const destTextEl=document.querySelector('#destinationText');
+
+    const destinationContentEl=document.querySelector('#destinationContent');
     const destHintBtn=document.querySelector('#destHintBtn');
     const destMsg=document.querySelector('#destMsg');
 
@@ -158,6 +218,7 @@
       throw new Error('STEP not found');
     }
 
+    // ------ affichage des écrans ------
     function showScreenRiddle(){
       scrRiddle.classList.add('active');
       scrBriefing.classList.remove('active');
@@ -166,7 +227,7 @@
       stepNameEl.textContent = STEP.label || `Étape ${STEP_KEY}`;
 
       screenTitleEl.textContent = STEP.riddleTitle;
-      screenSubtitleEl.textContent = "Résolvez l'énigme ci-dessous.";
+      screenSubtitleEl.textContent = "Résolvez l'énigme pour débloquer la suite.";
       riddleTextEl.textContent = STEP.riddleQuestion;
 
       msgEl.textContent="";
@@ -183,10 +244,9 @@
       stepNameEl.textContent = STEP.label || `Étape ${STEP_KEY}`;
 
       screenTitleEl.textContent = STEP.briefingTitle;
-      screenSubtitleEl.textContent = "Bravo ! Voici une partie du code à 4 chiffres qui ouvre le Sac d'Or Blanc.";
-      briefingTextEl.textContent = STEP.briefingText;
+      screenSubtitleEl.textContent = "Lisez bien ces instructions.";
 
-      // style personnalisé briefing
+      briefingTextEl.textContent = STEP.briefingText;
       briefingTextEl.style.color = STEP.briefingColor || "var(--fg)";
       briefingTextEl.style.fontSize = STEP.briefingSize || "1.2rem";
       briefingTextEl.style.fontWeight = "600";
@@ -200,10 +260,42 @@
       stepNameEl.textContent = STEP.label || `Étape ${STEP_KEY}`;
 
       screenTitleEl.textContent = STEP.destinationTitle;
-      screenSubtitleEl.textContent = "En route vers :";
-      destTextEl.textContent = STEP.destinationText;
+      screenSubtitleEl.textContent = "Voici où aller maintenant.";
+
+      // on vide le contenu précédent
+      destinationContentEl.innerHTML = "";
+
+      // 1. Texte destination (optionnel)
+      if (STEP.destinationText){
+        const p = document.createElement('p');
+        p.className = "plainText"; // garde la typo cohérente
+        p.textContent = STEP.destinationText;
+        destinationContentEl.appendChild(p);
+      }
+
+      // 2. Image destination (optionnelle)
+      if (STEP.destinationImage){
+        const img = document.createElement('img');
+        img.src = STEP.destinationImage;
+        img.alt = "Indice visuel";
+        img.className = "destImg";
+        destinationContentEl.appendChild(img);
+      }
+
+      // 3. Audio destination (optionnel)
+      if (STEP.destinationAudio){
+        const audioWrap = document.createElement('div');
+        audioWrap.style.marginTop = '16px';
+        const audio = document.createElement('audio');
+        audio.controls = true;
+        audio.src = STEP.destinationAudio;
+        audio.className = "destAudio";
+        audioWrap.appendChild(audio);
+        destinationContentEl.appendChild(audioWrap);
+      }
     }
 
+    // ------ interactions ------
     function checkAnswer(){
       const userVal=normalize(answerInput.value);
       const isGood=(STEP.answers||[]).some(ans=>normalize(ans)===userVal);
@@ -244,10 +336,11 @@
       }
     }
 
-    function goDestination(){
+    function goToDestination(){
       showScreenDestination();
     }
 
+    // ------ event listeners ------
     submitBtn.addEventListener('click',checkAnswer);
     answerInput.addEventListener('keydown',e=>{
       if(e.key==='Enter'){
@@ -256,9 +349,10 @@
       }
     });
     hintBtn.addEventListener('click',showHint);
-    goToDestinationBtn.addEventListener('click',goDestination);
+    goToDestinationBtn.addEventListener('click',goToDestination);
     destHintBtn.addEventListener('click',showDestHint);
 
+    // démarrage
     showScreenRiddle();
   </script>
 </body>
