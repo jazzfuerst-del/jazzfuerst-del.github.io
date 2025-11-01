@@ -336,7 +336,7 @@
 
       stepLabelEl.textContent = STEP_KEY;
       screenTitleEl.textContent = STEP.riddleTitle;
-      screenSubtitleEl.textContent = "Résolvez l'énigme pour débloquer la suite.";
+      screenSubtitleEl.textContent = "Résolvez l'énigme suivante afin de découvrir une partie du code.";
       riddleTextEl.textContent = STEP.riddleQuestion;
 
       msgEl.textContent = "";
@@ -344,7 +344,6 @@
       attempts = 0;
       attemptsEl.textContent = "0 tentative";
 
-      footerInfoEl.textContent = "• Courage détectives.";
     }
 
     // ========= INIT ÉCRAN BRIEFING =========
@@ -355,10 +354,10 @@
       scrDest.classList.remove('active');
 
       screenTitleEl.textContent = STEP.briefingTitle;
-      screenSubtitleEl.textContent = "Lisez bien ces instructions.";
+      screenSubtitleEl.textContent = "Bravo ! Vous venez de débloquer un des quatres chiffres composant le code mystère.";
       briefingTextEl.textContent = STEP.briefingText;
 
-      footerInfoEl.textContent = "• Ne montrez pas ce texte aux autres équipes 😉";
+      footerInfoEl.textContent = "Gardez pour vous ce pas en plus vers le Sac d'Or Blanc 😉";
     }
 
     // ========= INIT ÉCRAN DESTINATION =========
@@ -369,10 +368,10 @@
       scrDest.classList.add('active');
 
       screenTitleEl.textContent = STEP.destinationTitle;
-      screenSubtitleEl.textContent = "Voici où aller maintenant.";
+      screenSubtitleEl.textContent = "Rendez-vous maintenant à l'étape suivante :";
       destTextEl.textContent = STEP.destinationText;
 
-      footerInfoEl.textContent = "• Rendez-vous à l'endroit indiqué.";
+      footerInfoEl.textContent = "N'oubliez pas d'utiliser la carte a votre disposition afin d'identifié votre prochaine destination.";
     }
 
     // ========= LOGIQUE VALIDATION RÉPONSE =========
