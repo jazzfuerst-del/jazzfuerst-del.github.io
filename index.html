@@ -109,18 +109,18 @@
   <script>
     const STEPS = {
       "1": {
-        label: "Le Pont Mystère",
-        riddleTitle: "Énigme #1",
+        label: "Test",
+        riddleTitle: "Énigme",
         riddleQuestion: "Je parle sans bouche et j'entends sans oreilles. Je n'ai pas de corps, mais je prends vie avec le vent. Qui suis-je ?",
         hint: "Pense au son qui revient quand tu cries dans une grotte.",
         answers: ["echo", "l'echo", "l echo", "echo."],
 
-        briefingTitle: "Briefing #1",
+        briefingTitle: "Code",
         briefingText: "Bravo. Voici votre mission secrète : trouvez le mot de passe gravé sous le banc rouge.",
         briefingColor: "#22c55e",
         briefingSize: "1.6rem",
 
-        destinationTitle: "Destination suivante",
+        destinationTitle: "Etape suivante",
         destinationText: "Rendez-vous sous l'arche en pierre près de la fontaine. C'est là-bas que commence l'étape 2.",
         destHint: "Cherchez une arche en pierre où le son résonne."
       }
@@ -166,7 +166,7 @@
       stepNameEl.textContent = STEP.label || `Étape ${STEP_KEY}`;
 
       screenTitleEl.textContent = STEP.riddleTitle;
-      screenSubtitleEl.textContent = "Résolvez l'énigme pour débloquer la suite.";
+      screenSubtitleEl.textContent = "Résolvez l'énigme ci-dessous.";
       riddleTextEl.textContent = STEP.riddleQuestion;
 
       msgEl.textContent="";
@@ -183,7 +183,7 @@
       stepNameEl.textContent = STEP.label || `Étape ${STEP_KEY}`;
 
       screenTitleEl.textContent = STEP.briefingTitle;
-      screenSubtitleEl.textContent = "Lisez bien ces instructions.";
+      screenSubtitleEl.textContent = "Bravo ! Voici une partie du code à 4 chiffres qui ouvre le Sac d'Or Blanc.";
       briefingTextEl.textContent = STEP.briefingText;
 
       // style personnalisé briefing
@@ -200,7 +200,7 @@
       stepNameEl.textContent = STEP.label || `Étape ${STEP_KEY}`;
 
       screenTitleEl.textContent = STEP.destinationTitle;
-      screenSubtitleEl.textContent = "Voici où aller maintenant.";
+      screenSubtitleEl.textContent = "En route vers :";
       destTextEl.textContent = STEP.destinationText;
     }
 
