@@ -109,11 +109,11 @@
   <script>
     const STEPS = {
       "1": {
-        riddleTitle: "Énigme",
+        riddleTitle: "Énigme #1",
         riddleQuestion: "Je parle sans bouche et j'entends sans oreilles. Je n'ai pas de corps, mais je prends vie avec le vent. Qui suis-je ?",
         hint: "Pense au son qui revient quand tu cries dans une grotte.",
         answers: ["echo", "l'echo", "l echo", "echo."],
-        briefingTitle: "Code",
+        briefingTitle: "Briefing #1",
         briefingText: "Bravo. Voici votre mission secrète : trouvez le mot de passe gravé sous le banc rouge.",
         briefingColor: "#22c55e",
         briefingSize: "1.6rem",
@@ -133,9 +133,9 @@
 
     if(!STEP){document.querySelector('#card').innerHTML=`<h1>Étape inconnue</h1><p>Le paramètre <code>?step=${STEP_KEY}</code> ne correspond à aucune énigme.</p>`;throw new Error('STEP not found');}
 
-    function showScreenRiddle(){scrRiddle.classList.add('active');scrBriefing.classList.remove('active');scrDest.classList.remove('active');stepLabelEl.textContent=STEP_KEY;screenTitleEl.textContent=STEP.riddleTitle;screenSubtitleEl.textContent="Résolvez l'énigme ci dessous.";riddleTextEl.textContent=STEP.riddleQuestion;msgEl.textContent="";msgEl.className="msg";attempts=0;attemptsEl.textContent="0 tentative";}
-    function showScreenBriefing(){scrRiddle.classList.remove('active');scrBriefing.classList.add('active');scrDest.classList.remove('active');screenTitleEl.textContent=STEP.briefingTitle;screenSubtitleEl.textContent="Bravo ! Votre partie du code est :";briefingTextEl.textContent=STEP.briefingText;briefingTextEl.style.color=STEP.briefingColor||"var(--fg)";briefingTextEl.style.fontSize=STEP.briefingSize||"1.2rem";briefingTextEl.style.fontWeight="600";}
-    function showScreenDestination(){scrRiddle.classList.remove('active');scrBriefing.classList.remove('active');scrDest.classList.add('active');screenTitleEl.textContent=STEP.destinationTitle;screenSubtitleEl.textContent="Faites route vers :";destTextEl.textContent=STEP.destinationText;}
+    function showScreenRiddle(){scrRiddle.classList.add('active');scrBriefing.classList.remove('active');scrDest.classList.remove('active');stepLabelEl.textContent=STEP_KEY;screenTitleEl.textContent=STEP.riddleTitle;screenSubtitleEl.textContent="Résolvez l'énigme pour débloquer la suite.";riddleTextEl.textContent=STEP.riddleQuestion;msgEl.textContent="";msgEl.className="msg";attempts=0;attemptsEl.textContent="0 tentative";}
+    function showScreenBriefing(){scrRiddle.classList.remove('active');scrBriefing.classList.add('active');scrDest.classList.remove('active');screenTitleEl.textContent=STEP.briefingTitle;screenSubtitleEl.textContent="Lisez bien ces instructions.";briefingTextEl.textContent=STEP.briefingText;briefingTextEl.style.color=STEP.briefingColor||"var(--fg)";briefingTextEl.style.fontSize=STEP.briefingSize||"1.2rem";briefingTextEl.style.fontWeight="600";}
+    function showScreenDestination(){scrRiddle.classList.remove('active');scrBriefing.classList.remove('active');scrDest.classList.add('active');screenTitleEl.textContent=STEP.destinationTitle;screenSubtitleEl.textContent="Voici où aller maintenant.";destTextEl.textContent=STEP.destinationText;}
 
     function checkAnswer(){const userVal=normalize(answerInput.value);const isGood=(STEP.answers||[]).some(ans=>normalize(ans)===userVal);attempts++;attemptsEl.textContent=`${attempts} ${attempts>1?'tentatives':'tentative'}`;if(isGood){msgEl.textContent="✅ Bonne réponse !";msgEl.className="msg ok";answerInput.setAttribute('disabled','');submitBtn.setAttribute('disabled','');confetti();setTimeout(()=>{showScreenBriefing();},600);}else{msgEl.textContent="❌ Mauvaise réponse. Réessayez.";msgEl.className="msg err";answerInput.focus();}}
     function showHint(){if(STEP.hint){msgEl.textContent="💡 Indice : "+STEP.hint;msgEl.className="msg";}else{msgEl.textContent="Aucun indice pour cette étape.";msgEl.className="msg";}}
