@@ -38,6 +38,7 @@
       padding:28px;
       position:relative;
       overflow:hidden;
+      text-align:left;
     }
 
     .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(124,92,255,.12);color:#6b5cff;font-weight:600;font-size:.85rem}
@@ -58,14 +59,9 @@
     .section{display:none}
     .section.active{display:block}
 
-    .bigText{font-size:1.05rem;line-height:1.6;color:var(--fg);background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px}
-    .plainText {
-    font-size: 1.05rem;
-    line-height: 1.6;
-    color: var(--fg);
-    text-align: left;
-    /* pas de padding, pas de fond, pas de bordure */
-    }
+    .bigText{font-size:1.05rem;line-height:1.6;color:var(--fg);background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;text-align:left}
+    .plainText{font-size:1.05rem;line-height:1.6;color:var(--fg);text-align:left}
+
     .confetti{position:absolute;inset:0;pointer-events:none;}
     .confetti i{position:absolute;width:8px;height:14px;border-radius:2px;opacity:0;animation:pop 1.2s ease-out forwards}
     @keyframes pop{0%{transform:translate(var(--x,0),0) rotate(0);opacity:1}100%{transform:translate(var(--x,0),-160px) rotate(1turn);opacity:0}}
@@ -116,8 +112,8 @@
         answers: ["echo", "l'echo", "l echo", "echo."],
         briefingTitle: "Briefing #1",
         briefingText: "Bravo. Voici votre mission secrète : trouvez le mot de passe gravé sous le banc rouge.",
-        briefingColor: "#22c55e", // 💚 couleur du texte du briefing
-        briefingSize: "1.6rem",   // 🔠 taille du texte du briefing
+        briefingColor: "#22c55e",
+        briefingSize: "1.6rem",
         destinationTitle: "Destination suivante",
         destinationText: "Rendez-vous sous l'arche en pierre près de la fontaine. C'est là-bas que commence l'étape 2.",
         destHint: "Cherchez une arche en pierre où le son résonne."
@@ -135,10 +131,7 @@
     if(!STEP){document.querySelector('#card').innerHTML=`<h1>Étape inconnue</h1><p>Le paramètre <code>?step=${STEP_KEY}</code> ne correspond à aucune énigme.</p>`;throw new Error('STEP not found');}
 
     function showScreenRiddle(){scrRiddle.classList.add('active');scrBriefing.classList.remove('active');scrDest.classList.remove('active');stepLabelEl.textContent=STEP_KEY;screenTitleEl.textContent=STEP.riddleTitle;screenSubtitleEl.textContent="Résolvez l'énigme pour débloquer la suite.";riddleTextEl.textContent=STEP.riddleQuestion;msgEl.textContent="";msgEl.className="msg";attempts=0;attemptsEl.textContent="0 tentative";}
-    function showScreenBriefing(){scrRiddle.classList.remove('active');scrBriefing.classList.add('active');scrDest.classList.remove('active');screenTitleEl.textContent = STEP.briefingTitle;screenSubtitleEl.textContent = "Lisez bien ces instructions.";briefingTextEl.textContent = STEP.briefingText;// 🌈 Appliquer couleur et taille personnalisées
-    briefingTextEl.style.color = STEP.briefingColor || "var(--fg)";
-    briefingTextEl.style.fontSize = STEP.briefingSize || "1.2rem";
-    briefingTextEl.style.fontWeight = "600";}
+    function showScreenBriefing(){scrRiddle.classList.remove('active');scrBriefing.classList.add('active');scrDest.classList.remove('active');screenTitleEl.textContent=STEP.briefingTitle;screenSubtitleEl.textContent="Lisez bien ces instructions.";briefingTextEl.textContent=STEP.briefingText;briefingTextEl.style.color=STEP.briefingColor||"var(--fg)";briefingTextEl.style.fontSize=STEP.briefingSize||"1.2rem";briefingTextEl.style.fontWeight="600";}
     function showScreenDestination(){scrRiddle.classList.remove('active');scrBriefing.classList.remove('active');scrDest.classList.add('active');screenTitleEl.textContent=STEP.destinationTitle;screenSubtitleEl.textContent="Voici où aller maintenant.";destTextEl.textContent=STEP.destinationText;}
 
     function checkAnswer(){const userVal=normalize(answerInput.value);const isGood=(STEP.answers||[]).some(ans=>normalize(ans)===userVal);attempts++;attemptsEl.textContent=`${attempts} ${attempts>1?'tentatives':'tentative'}`;if(isGood){msgEl.textContent="✅ Bonne réponse !";msgEl.className="msg ok";answerInput.setAttribute('disabled','');submitBtn.setAttribute('disabled','');confetti();setTimeout(()=>{showScreenBriefing();},600);}else{msgEl.textContent="❌ Mauvaise réponse. Réessayez.";msgEl.className="msg err";answerInput.focus();}}
