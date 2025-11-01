@@ -38,7 +38,6 @@
       padding:28px;
       position:relative;
       overflow:hidden;
-      text-align: left;
     }
 
     .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(124,92,255,.12);color:#6b5cff;font-weight:600;font-size:.85rem}
@@ -60,7 +59,13 @@
     .section.active{display:block}
 
     .bigText{font-size:1.05rem;line-height:1.6;color:var(--fg);background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px}
-
+    .plainText {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--fg);
+    text-align: left;
+    /* pas de padding, pas de fond, pas de bordure */
+    }
     .confetti{position:absolute;inset:0;pointer-events:none;}
     .confetti i{position:absolute;width:8px;height:14px;border-radius:2px;opacity:0;animation:pop 1.2s ease-out forwards}
     @keyframes pop{0%{transform:translate(var(--x,0),0) rotate(0);opacity:1}100%{transform:translate(var(--x,0),-160px) rotate(1turn);opacity:0}}
@@ -93,7 +98,7 @@
       </section>
 
       <section id="screen-destination" class="section">
-        <div class="bigText" id="destinationText"></div>
+        <div class="plainText" id="destinationText"></div>
         <button class="linkLike" id="destHintBtn" style="margin-top:10px">Besoin d'un indice ?</button>
         <div class="msg" id="destMsg" aria-live="polite"></div>
       </section>
