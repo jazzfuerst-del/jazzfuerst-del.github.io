@@ -71,7 +71,7 @@
 <body>
   <div class="shell">
     <div class="card" id="card">
-      <span class="pill">Étape <span id="stepLabel">?</span></span>
+      <span class="pill" id="stepName">Étape ?</span>
       <h1 id="screenTitle">…</h1>
       <p class="subtitle" id="screenSubtitle">…</p>
 
@@ -109,14 +109,17 @@
   <script>
     const STEPS = {
       "1": {
+        label: "Le Pont Mystère",
         riddleTitle: "Énigme #1",
         riddleQuestion: "Je parle sans bouche et j'entends sans oreilles. Je n'ai pas de corps, mais je prends vie avec le vent. Qui suis-je ?",
         hint: "Pense au son qui revient quand tu cries dans une grotte.",
         answers: ["echo", "l'echo", "l echo", "echo."],
+
         briefingTitle: "Briefing #1",
         briefingText: "Bravo. Voici votre mission secrète : trouvez le mot de passe gravé sous le banc rouge.",
         briefingColor: "#22c55e",
         briefingSize: "1.6rem",
+
         destinationTitle: "Destination suivante",
         destinationText: "Rendez-vous sous l'arche en pierre près de la fontaine. C'est là-bas que commence l'étape 2.",
         destHint: "Cherchez une arche en pierre où le son résonne."
@@ -126,23 +129,135 @@
     function normalize(s){return (s||"").toString().trim().toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu,"").replace(/[^a-z0-9'\s.-]/g,"").replace(/\s+/g," ");}
     function confetti(){const c=document.querySelector('#confetti');c.innerHTML='';const colors=['#7c5cff','#22c55e','#3b82f6','#f59e0b','#ef4444'];for(let i=0;i<40;i++){const el=document.createElement('i');el.style.left=Math.random()*100+'%';el.style.bottom='0';el.style.setProperty('--x',(Math.random()*120-60)+'px');el.style.background=colors[i%colors.length];el.style.animationDelay=(Math.random()*0.35)+'s';c.appendChild(el);}}
 
-    const qs=new URLSearchParams(location.search);const STEP_KEY=qs.get('step')||"1";const STEP=STEPS[STEP_KEY];
-    const stepLabelEl=document.querySelector('#stepLabel');const screenTitleEl=document.querySelector('#screenTitle');const screenSubtitleEl=document.querySelector('#screenSubtitle');const scrRiddle=document.querySelector('#screen-riddle');const scrBriefing=document.querySelector('#screen-briefing');const scrDest=document.querySelector('#screen-destination');const riddleTextEl=document.querySelector('#riddleText');const answerInput=document.querySelector('#answer');const submitBtn=document.querySelector('#submitAnswer');const attemptsEl=document.querySelector('#attempts');const hintBtn=document.querySelector('#hintBtn');const msgEl=document.querySelector('#msg');const briefingTextEl=document.querySelector('#briefingText');const goToDestinationBtn=document.querySelector('#goToDestination');const destTextEl=document.querySelector('#destinationText');const destHintBtn=document.querySelector('#destHintBtn');const destMsg=document.querySelector('#destMsg');
+    const qs=new URLSearchParams(location.search);
+    const STEP_KEY=qs.get('step')||"1";
+    const STEP=STEPS[STEP_KEY];
+
+    const stepNameEl=document.querySelector('#stepName');
+    const screenTitleEl=document.querySelector('#screenTitle');
+    const screenSubtitleEl=document.querySelector('#screenSubtitle');
+    const scrRiddle=document.querySelector('#screen-riddle');
+    const scrBriefing=document.querySelector('#screen-briefing');
+    const scrDest=document.querySelector('#screen-destination');
+    const riddleTextEl=document.querySelector('#riddleText');
+    const answerInput=document.querySelector('#answer');
+    const submitBtn=document.querySelector('#submitAnswer');
+    const attemptsEl=document.querySelector('#attempts');
+    const hintBtn=document.querySelector('#hintBtn');
+    const msgEl=document.querySelector('#msg');
+    const briefingTextEl=document.querySelector('#briefingText');
+    const goToDestinationBtn=document.querySelector('#goToDestination');
+    const destTextEl=document.querySelector('#destinationText');
+    const destHintBtn=document.querySelector('#destHintBtn');
+    const destMsg=document.querySelector('#destMsg');
 
     let attempts=0;
 
-    if(!STEP){document.querySelector('#card').innerHTML=`<h1>Étape inconnue</h1><p>Le paramètre <code>?step=${STEP_KEY}</code> ne correspond à aucune énigme.</p>`;throw new Error('STEP not found');}
+    if(!STEP){
+      document.querySelector('#card').innerHTML=`<h1>Étape inconnue</h1><p>Le paramètre <code>?step=${STEP_KEY}</code> ne correspond à aucune énigme.</p>`;
+      throw new Error('STEP not found');
+    }
 
-    function showScreenRiddle(){scrRiddle.classList.add('active');scrBriefing.classList.remove('active');scrDest.classList.remove('active');stepLabelEl.textContent=STEP_KEY;screenTitleEl.textContent=STEP.riddleTitle;screenSubtitleEl.textContent="Résolvez l'énigme pour débloquer la suite.";riddleTextEl.textContent=STEP.riddleQuestion;msgEl.textContent="";msgEl.className="msg";attempts=0;attemptsEl.textContent="0 tentative";}
-    function showScreenBriefing(){scrRiddle.classList.remove('active');scrBriefing.classList.add('active');scrDest.classList.remove('active');screenTitleEl.textContent=STEP.briefingTitle;screenSubtitleEl.textContent="Lisez bien ces instructions.";briefingTextEl.textContent=STEP.briefingText;briefingTextEl.style.color=STEP.briefingColor||"var(--fg)";briefingTextEl.style.fontSize=STEP.briefingSize||"1.2rem";briefingTextEl.style.fontWeight="600";}
-    function showScreenDestination(){scrRiddle.classList.remove('active');scrBriefing.classList.remove('active');scrDest.classList.add('active');screenTitleEl.textContent=STEP.destinationTitle;screenSubtitleEl.textContent="Voici où aller maintenant.";destTextEl.textContent=STEP.destinationText;}
+    function showScreenRiddle(){
+      scrRiddle.classList.add('active');
+      scrBriefing.classList.remove('active');
+      scrDest.classList.remove('active');
 
-    function checkAnswer(){const userVal=normalize(answerInput.value);const isGood=(STEP.answers||[]).some(ans=>normalize(ans)===userVal);attempts++;attemptsEl.textContent=`${attempts} ${attempts>1?'tentatives':'tentative'}`;if(isGood){msgEl.textContent="✅ Bonne réponse !";msgEl.className="msg ok";answerInput.setAttribute('disabled','');submitBtn.setAttribute('disabled','');confetti();setTimeout(()=>{showScreenBriefing();},600);}else{msgEl.textContent="❌ Mauvaise réponse. Réessayez.";msgEl.className="msg err";answerInput.focus();}}
-    function showHint(){if(STEP.hint){msgEl.textContent="💡 Indice : "+STEP.hint;msgEl.className="msg";}else{msgEl.textContent="Aucun indice pour cette étape.";msgEl.className="msg";}}
-    function showDestHint(){if(STEP.destHint){destMsg.textContent="💡 Indice : "+STEP.destHint;destMsg.className="msg";}else{destMsg.textContent="Aucun indice pour cette destination.";destMsg.className="msg";}}
-    function goDestination(){showScreenDestination();}
+      stepNameEl.textContent = STEP.label || `Étape ${STEP_KEY}`;
 
-    submitBtn.addEventListener('click',checkAnswer);answerInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();checkAnswer();}});hintBtn.addEventListener('click',showHint);goToDestinationBtn.addEventListener('click',goDestination);destHintBtn.addEventListener('click',showDestHint);
+      screenTitleEl.textContent = STEP.riddleTitle;
+      screenSubtitleEl.textContent = "Résolvez l'énigme pour débloquer la suite.";
+      riddleTextEl.textContent = STEP.riddleQuestion;
+
+      msgEl.textContent="";
+      msgEl.className="msg";
+      attempts=0;
+      attemptsEl.textContent="0 tentative";
+    }
+
+    function showScreenBriefing(){
+      scrRiddle.classList.remove('active');
+      scrBriefing.classList.add('active');
+      scrDest.classList.remove('active');
+
+      stepNameEl.textContent = STEP.label || `Étape ${STEP_KEY}`;
+
+      screenTitleEl.textContent = STEP.briefingTitle;
+      screenSubtitleEl.textContent = "Lisez bien ces instructions.";
+      briefingTextEl.textContent = STEP.briefingText;
+
+      // style personnalisé briefing
+      briefingTextEl.style.color = STEP.briefingColor || "var(--fg)";
+      briefingTextEl.style.fontSize = STEP.briefingSize || "1.2rem";
+      briefingTextEl.style.fontWeight = "600";
+    }
+
+    function showScreenDestination(){
+      scrRiddle.classList.remove('active');
+      scrBriefing.classList.remove('active');
+      scrDest.classList.add('active');
+
+      stepNameEl.textContent = STEP.label || `Étape ${STEP_KEY}`;
+
+      screenTitleEl.textContent = STEP.destinationTitle;
+      screenSubtitleEl.textContent = "Voici où aller maintenant.";
+      destTextEl.textContent = STEP.destinationText;
+    }
+
+    function checkAnswer(){
+      const userVal=normalize(answerInput.value);
+      const isGood=(STEP.answers||[]).some(ans=>normalize(ans)===userVal);
+      attempts++;
+      attemptsEl.textContent=`${attempts} ${attempts>1?'tentatives':'tentative'}`;
+
+      if(isGood){
+        msgEl.textContent="✅ Bonne réponse !";
+        msgEl.className="msg ok";
+        answerInput.setAttribute('disabled','');
+        submitBtn.setAttribute('disabled','');
+        confetti();
+        setTimeout(()=>{showScreenBriefing();},600);
+      }else{
+        msgEl.textContent="❌ Mauvaise réponse. Réessayez.";
+        msgEl.className="msg err";
+        answerInput.focus();
+      }
+    }
+
+    function showHint(){
+      if(STEP.hint){
+        msgEl.textContent="💡 Indice : "+STEP.hint;
+        msgEl.className="msg";
+      }else{
+        msgEl.textContent="Aucun indice pour cette étape.";
+        msgEl.className="msg";
+      }
+    }
+
+    function showDestHint(){
+      if(STEP.destHint){
+        destMsg.textContent="💡 Indice : "+STEP.destHint;
+        destMsg.className="msg";
+      }else{
+        destMsg.textContent="Aucun indice pour cette destination.";
+        destMsg.className="msg";
+      }
+    }
+
+    function goDestination(){
+      showScreenDestination();
+    }
+
+    submitBtn.addEventListener('click',checkAnswer);
+    answerInput.addEventListener('keydown',e=>{
+      if(e.key==='Enter'){
+        e.preventDefault();
+        checkAnswer();
+      }
+    });
+    hintBtn.addEventListener('click',showHint);
+    goToDestinationBtn.addEventListener('click',goDestination);
+    destHintBtn.addEventListener('click',showDestHint);
 
     showScreenRiddle();
   </script>
