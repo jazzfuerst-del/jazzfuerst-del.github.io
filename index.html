@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Énigme • Chasse au trésor</title>
+  <meta name="color-scheme" content="light dark">
+  <style>
+    :root{
+      --bg: #0b1020; --fg: #eef1f7; --muted:#9aa3b2; --card:#121a33;
+      --accent:#7c5cff; --ok:#22c55e; --err:#ef4444; --ring:rgba(124,92,255,.3);
+    }
+    @media (prefers-color-scheme: light){
+      :root{ --bg:#f6f7fb; --fg:#141824; --muted:#606b80; --card:#ffffff; --ring:rgba(124,92,255,.2); }
+      body{ background:linear-gradient(180deg,#fbfbff, #eef1ff 25%, #f6f7fb); }
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: system-ui,-apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--fg);
+      min-height:100svh; display:grid; place-items:center; padding:24px;
+      background:radial-gradient(80vw 80vw at 10% 10%, rgba(124,92,255,.08), transparent 40%),
+                 radial-gradient(70vw 70vw at 90% 0%, rgba(34,197,94,.09), transparent 45%),
+                 radial-gradient(70vw 70vw at 50% 100%, rgba(59,130,246,.08), transparent 45%), var(--bg);
+    }
+    .shell{ width:min(820px, 100%); }
+    .card{
+      background:var(--card); border:1px solid rgba(255,255,255,.08); border-radius:20px;
+      box-shadow:0 10px 30px rgba(2,6,23,.25);
+      padding:28px; position:relative; overflow:hidden;
+    }
+    h1{ font-size:clamp(1.4rem, 1.1rem + 2vw, 2.2rem); margin:0 0 4px; letter-spacing:.3px }
+    .subtitle{ color:var(--muted); margin:0 0 16px; font-size:1rem }
+    .progress{ display:flex; gap:6px; margin-bottom:14px }
+    .dot{ height:8px; width:8px; border-radius:999px; background:#c7cbe0; opacity:.35 }
+    .dot.active{ opacity:1; background:var(--accent) }
+
+    .riddle{ font-size:1.125rem; line-height:1.6; margin:16px 0 18px }
+
+    .inputRow{ display:flex; gap:10px; align-items:center }
+    input[type=text]{
+      flex:1; padding:14px 14px; border-radius:12px; border:1px solid rgba(124,92,255,.25);
+      outline:0; font-size:1rem; background:transparent; color:var(--fg);
+      box-shadow:0 0 0 0 rgba(0,0,0,0);
+    }
+    input[type=text]:focus{ box-shadow:0 0 0 6px var(--ring) }
+    button{
+      padding:12px 16px; border-radius:12px; border:0; font-weight:600; cursor:pointer;
+      background:linear-gradient(180deg, var(--accent), #5c3bff); color:white; box-shadow:0 6px 16px rgba(92,59,255,.45);
+    }
+    .helpRow{ display:flex; gap:10px; margin-top:10px; align-items:center; justify-content:space-between; color:var(--muted); font-size:.95rem }
+    .msg{ margin-top:14px; font-weight:600 }
+    .msg.ok{ color:var(--ok) }
+    .msg.err{ color:var(--err) }
+
+    .clue{ margin-top:16px; padding:16px; border-radius:16px; background:rgba(34,197,94,.1); border:1px dashed rgba(34,197,94,.35) }
+    .clueTitle{ font-weight:700; margin-bottom:6px }
+
+    .footer{ margin-top:22px; color:var(--muted); font-size:.9rem }
+    .pill{ display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; background:rgba(124,92,255,.12); color:#6b5cff; font-weight:600; font-size:.85rem }
+
+    /* tiny confetti for success */
+    .confetti{ position:absolute; inset:0; pointer-events:none; }
+    .confetti i{ position:absolute; width:8px; height:14px; border-radius:2px; opacity:0; animation:pop 1.2s ease-out forwards; }
+    @keyframes pop{
+      0%{ transform:translate(var(--x,0), 0) rotate(0); opacity:1 }
+      100%{ transform:translate(var(--x,0), -160px) rotate(1turn); opacity:0 }
+    }
+
+    .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0 }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="card" id="card">
+      <span class="pill">Étape <span id="stepLabel">1</span></span>
+      <h1 id="title">Énigme</h1>
+      <p class="subtitle" id="subtitle">Répondez correctement pour débloquer l'indice du prochain lieu.</p>
+
+      <div class="progress" id="progress"></div>
+
+      <p class="riddle" id="riddle">Chargement…</p>
+
+      <form class="inputRow" id="form">
+        <label class="sr-only" for="answer">Votre réponse</label>
+        <input id="answer" type="text" autocomplete="off" placeholder="Votre réponse" required />
+        <button type="submit">Valider</button>
+      </form>
+
+      <div class="helpRow">
+        <span id="attempts">0 tentative</span>
+        <button type="button" id="hintBtn" style="background:transparent; color:var(--accent); box-shadow:none; padding:6px 8px">Besoin d'un indice ?</button>
+      </div>
+
+      <div class="msg" id="msg" aria-live="polite"></div>
+
+      <div id="clueWrap" style="display:none">
+        <div class="clue">
+          <div class="clueTitle">🎯 Indice débloqué</div>
+          <div id="clue"></div>
+          <div id="next" style="margin-top:10px"></div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <span id="footerInfo">• Bonne chance !</span>
+      </div>
+
+      <div class="confetti" id="confetti" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * 🔧 CONFIGURATION — MODIFIEZ ICI
+     * Vous pouvez créer autant d'étapes que vous voulez.
+     * - answers: tableau des réponses acceptées (sans accents, casse ignorée)
+     * - clue: texte affiché si la réponse est bonne
+     * - nextUrl: (optionnel) URL de la prochaine étape. Vous pouvez générer un QR code vers cette URL.
+     * - hint: (optionnel) petit indice affiché sur demande
+     */
+    const STEPS = {
+      "1": {
+        title: "Je parle sans bouche et j\'entends sans oreilles.",
+        riddle: "Je n\'ai pas de corps, mais je prends vie avec le vent. Qui suis-je ?",
+        answers: ["echo", "l'echo", "echo."],
+        clue: "Rendez-vous près de la voûte en pierre qui renvoie ta voix.",
+        nextUrl: "https://votresite.exemple/enigme.html?step=2",
+        hint: "Pense au son qui revient dans une grotte."
+      },
+      "2": {
+        title: "Plus je suis grand, moins tu me vois.",
+        riddle: "Qui suis-je ?",
+        answers: ["obscurite", "l'obscurite", "la nuit"],
+        clue: "Cap vers le lampadaire au bout de l\'allée.",
+        nextUrl: "https://votresite.exemple/enigme.html?step=3",
+        hint: "C\'est l\'absence de lumière."
+      },
+      "3": {
+        title: "Je cours tout le long de la ville sans jamais bouger.",
+        riddle: "Qui suis-je ?",
+        answers: ["route", "la route", "fleuve", "le fleuve"],
+        clue: "Dernière étape : la passerelle sur l\'eau.",
+        nextUrl: "https://votresite.exemple/fin.html",
+        hint: "On m\'emprunte pour se déplacer."
+      }
+    };
+
+    /** Fin de la configuration **/
+
+    const qs = new URLSearchParams(location.search);
+    const STEP_KEY = qs.get('step') || Object.keys(STEPS)[0];
+    const STEP = STEPS[STEP_KEY];
+
+    const title = document.querySelector('#title');
+    const subtitle = document.querySelector('#subtitle');
+    const riddle = document.querySelector('#riddle');
+    const attemptsEl = document.querySelector('#attempts');
+    const msg = document.querySelector('#msg');
+    const form = document.querySelector('#form');
+    const answer = document.querySelector('#answer');
+    const clueWrap = document.querySelector('#clueWrap');
+    const clue = document.querySelector('#clue');
+    const next = document.querySelector('#next');
+    const footerInfo = document.querySelector('#footerInfo');
+    const progress = document.querySelector('#progress');
+    const stepLabel = document.querySelector('#stepLabel');
+    const hintBtn = document.querySelector('#hintBtn');
+
+    if(!STEP){
+      document.querySelector('#card').innerHTML = `<h1>Étape inconnue</h1><p>Le paramètre <code>?step=${STEP_KEY}</code> ne correspond à aucune énigme.</p>`;
+      throw new Error('Step not found');
+    }
+
+    // UI setup
+    stepLabel.textContent = STEP_KEY;
+    title.textContent = "Énigme";
+    subtitle.textContent = STEP.title;
+    riddle.textContent = STEP.riddle;
+
+    // progress dots
+    const keys = Object.keys(STEPS);
+    keys.forEach(k=>{
+      const d = document.createElement('div');
+      d.className = 'dot' + (k===STEP_KEY ? ' active' : '');
+      progress.appendChild(d);
+    });
+
+    let attempts = 0;
+    attemptsEl.textContent = `${attempts} tentative`;
+
+    const normalize = (s)=> (s||'')
+      .toString()
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/\p{Diacritic}/gu, '')
+      .replace(/[^a-z0-9'\s.-]/g,'')
+      .replace(/\s+/g,' ');
+
+    function celebrate(){
+      const c = document.querySelector('#confetti');
+      c.innerHTML = '';
+      const colors = ['#7c5cff','#22c55e','#3b82f6','#f59e0b','#ef4444'];
+      for(let i=0;i<40;i++){
+        const el = document.createElement('i');
+        el.style.left = Math.random()*100+'%';
+        el.style.bottom = '0';
+        el.style.setProperty('--x', (Math.random()*120-60)+'px');
+        el.style.background = colors[i%colors.length];
+        el.style.animationDelay = (Math.random()*0.35)+'s';
+        c.appendChild(el);
+      }
+    }
+
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const val = normalize(answer.value);
+      attempts++;
+      attemptsEl.textContent = `${attempts} ${attempts>1?'tentatives':'tentative'}`;
+
+      const ok = (STEP.answers||[]).some(a => normalize(a) === val);
+      if(ok){
+        msg.textContent = '✅ Bonne réponse !';
+        msg.className = 'msg ok';
+        clueWrap.style.display = 'block';
+        clue.textContent = STEP.clue || 'Indice indisponible.';
+        next.innerHTML = STEP.nextUrl ? `Prochaine étape : <a href="${STEP.nextUrl}">${STEP.nextUrl}</a>` : '';
+        footerInfo.textContent = '• Montrez ce panneau pour vérifier votre réussite.';
+        celebrate();
+        answer.setAttribute('disabled','');
+      } else {
+        msg.textContent = '❌ Mauvaise réponse. Réessayez.';
+        msg.className = 'msg err';
+        answer.focus();
+      }
+    });
+
+    hintBtn.addEventListener('click', ()=>{
+      if(STEP.hint){
+        msg.textContent = '💡 Indice : ' + STEP.hint;
+        msg.className = 'msg';
+      } else {
+        msg.textContent = "Aucun indice pour cette étape.";
+        msg.className = 'msg';
+      }
+    });
+
+    // Qualité de vie : appuyer sur Entrée pour valider
+    answer.addEventListener('keydown', (e)=>{
+      if(e.key==='Enter'){
+        // le <form> gère déjà la soumission
+      }
+    });
+  </script>
+
+  <!-- 👇 Notes
+  Déploiement rapide :
+  1) Mettez ce fichier sur GitHub Pages, Netlify, Vercel, OVH, ou n'importe quel hébergeur statique.
+  2) Pour chaque étape, générez un QR code qui pointe vers l'URL avec ?step=1, ?step=2, etc.
+  3) Modifiez les énigmes/réponses dans l'objet STEPS ci-dessus.
+
+  ⚠️ Sécurité :
+  - Sur un site statique, les réponses sont visibles dans le code source. Pour une vraie chasse au trésor, c'est souvent suffisant.
+  - Pour limiter la triche, vous pouvez :
+      • utiliser des formulations de réponses variées (déjà géré par 'answers')
+      • mettre l'indice suivant dans un lieu physique (pas seulement un lien)
+      • ou héberger une petite API serveur qui valide côté serveur.
+  -->
+</body>
+</html>
