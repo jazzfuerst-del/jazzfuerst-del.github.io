@@ -40,68 +40,17 @@
       overflow:hidden;
     }
 
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:6px 10px;
-      border-radius:999px;
-      background:rgba(124,92,255,.12);
-      color:#6b5cff;
-      font-weight:600;
-      font-size:.85rem;
-    }
-    h1{
-      font-size:clamp(1.4rem,1.1rem+2vw,2.2rem);
-      margin:12px 0 4px;
-      letter-spacing:.3px;
-    }
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(124,92,255,.12);color:#6b5cff;font-weight:600;font-size:.85rem}
+    h1{font-size:clamp(1.4rem,1.1rem+2vw,2.2rem);margin:12px 0 4px;letter-spacing:.3px}
     .subtitle{color:var(--muted);margin:0 0 16px;font-size:1rem;line-height:1.4}
     .riddle{font-size:1.125rem;line-height:1.6;margin:16px 0 18px}
 
     .inputRow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    input[type=text]{
-      flex:1;
-      min-width:200px;
-      padding:14px 14px;
-      border-radius:12px;
-      border:1px solid rgba(124,92,255,.25);
-      outline:0;
-      font-size:1rem;
-      background:transparent;
-      color:var(--fg);
-      box-shadow:0 0 0 0 rgba(0,0,0,0);
-    }
+    input[type=text]{flex:1;min-width:200px;padding:14px 14px;border-radius:12px;border:1px solid rgba(124,92,255,.25);outline:0;font-size:1rem;background:transparent;color:var(--fg);box-shadow:0 0 0 0 rgba(0,0,0,0)}
     input[type=text]:focus{box-shadow:0 0 0 6px var(--ring)}
-    button.btn{
-      padding:12px 16px;
-      border-radius:12px;
-      border:0;
-      font-weight:600;
-      cursor:pointer;
-      background:linear-gradient(180deg,var(--accent),#5c3bff);
-      color:white;
-      box-shadow:0 6px 16px rgba(92,59,255,.45);
-    }
-    button.linkLike{
-      background:transparent;
-      color:var(--accent);
-      box-shadow:none;
-      border:0;
-      padding:6px 8px;
-      font-weight:600;
-      cursor:pointer;
-    }
-    .rowBetween{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top:10px;
-      align-items:center;
-      justify-content:space-between;
-      color:var(--muted);
-      font-size:.95rem
-    }
+    button.btn{padding:12px 16px;border-radius:12px;border:0;font-weight:600;cursor:pointer;background:linear-gradient(180deg,var(--accent),#5c3bff);color:white;box-shadow:0 6px 16px rgba(92,59,255,.45)}
+    button.linkLike{background:transparent;color:var(--accent);box-shadow:none;border:0;padding:6px 8px;font-weight:600;cursor:pointer}
+    .rowBetween{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;align-items:center;justify-content:space-between;color:var(--muted);font-size:.95rem}
     .msg{margin-top:14px;font-weight:600}
     .msg.ok{color:var(--ok)}
     .msg.err{color:var(--err)}
@@ -109,43 +58,11 @@
     .section{display:none}
     .section.active{display:block}
 
-    .bigText{
-      font-size:1.05rem;
-      line-height:1.6;
-      color:var(--fg);
-      background:rgba(255,255,255,.03);
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:16px;
-      padding:16px;
-    }
+    .bigText{font-size:1.05rem;line-height:1.6;color:var(--fg);background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px}
 
-    .footer{margin-top:22px;color:var(--muted);font-size:.9rem}
-
-    /* confetti */
     .confetti{position:absolute;inset:0;pointer-events:none;}
-    .confetti i{
-      position:absolute;
-      width:8px;
-      height:14px;
-      border-radius:2px;
-      opacity:0;
-      animation:pop 1.2s ease-out forwards;
-    }
-    @keyframes pop{
-      0%{transform:translate(var(--x,0),0) rotate(0);opacity:1}
-      100%{transform:translate(var(--x,0),-160px) rotate(1turn);opacity:0}
-    }
-
-    .sr-only{
-      position:absolute;
-      width:1px;
-      height:1px;
-      padding:0;
-      margin:-1px;
-      overflow:hidden;
-      clip:rect(0,0,0,0);
-      border:0;
-    }
+    .confetti i{position:absolute;width:8px;height:14px;border-radius:2px;opacity:0;animation:pop 1.2s ease-out forwards}
+    @keyframes pop{0%{transform:translate(var(--x,0),0) rotate(0);opacity:1}100%{transform:translate(var(--x,0),-160px) rotate(1turn);opacity:0}}
   </style>
 </head>
 <body>
@@ -155,280 +72,71 @@
       <h1 id="screenTitle">…</h1>
       <p class="subtitle" id="screenSubtitle">…</p>
 
-      <!-- ===================== -->
-      <!-- ÉCRAN 1 : ÉNIGME      -->
-      <!-- ===================== -->
       <section id="screen-riddle" class="section">
         <p class="riddle" id="riddleText">Chargement…</p>
-
         <div class="inputRow">
           <label class="sr-only" for="answer">Votre réponse</label>
           <input id="answer" type="text" autocomplete="off" placeholder="Votre réponse" />
           <button class="btn" id="submitAnswer">Valider</button>
         </div>
-
         <div class="rowBetween">
           <span id="attempts">0 tentative</span>
           <button class="linkLike" id="hintBtn">Besoin d'un indice ?</button>
         </div>
-
         <div class="msg" id="msg" aria-live="polite"></div>
       </section>
 
-      <!-- ===================== -->
-      <!-- ÉCRAN 2 : BRIEFING    -->
-      <!-- ===================== -->
       <section id="screen-briefing" class="section">
-        <div class="bigText" id="briefingText">
-          <!-- rempli dynamiquement -->
-        </div>
-
-        <button class="btn" style="margin-top:20px;width:100%" id="goToDestination">
-          Voir la prochaine étape
-        </button>
+        <div class="bigText" id="briefingText"></div>
+        <button class="btn" style="margin-top:20px;width:100%" id="goToDestination">Voir la prochaine étape</button>
       </section>
 
-      <!-- ===================== -->
-      <!-- ÉCRAN 3 : DESTINATION -->
-      <!-- ===================== -->
       <section id="screen-destination" class="section">
-        <div class="bigText" id="destinationText">
-          <!-- rempli dynamiquement -->
-        </div>
+        <div class="bigText" id="destinationText"></div>
+        <button class="linkLike" id="destHintBtn" style="margin-top:10px">Besoin d'un indice ?</button>
+        <div class="msg" id="destMsg" aria-live="polite"></div>
       </section>
-
-      <div class="footer">
-        <span id="footerInfo">• Bonne chance !</span>
-      </div>
 
       <div class="confetti" id="confetti" aria-hidden="true"></div>
     </div>
   </div>
 
   <script>
-    /*
-     * CONFIGURATION
-     *
-     * Tu définis ici chaque étape du jeu.
-     *
-     * Par exemple step "1", "2", etc.
-     *
-     * Pour chaque step :
-     * - riddleTitle     : titre affiché sur l'écran énigme
-     * - riddleQuestion  : texte de l'énigme
-     * - hint            : indice révélé si on clique sur "indice"
-     * - answers         : réponses acceptées (on ignore majuscules/accents)
-     *
-     * - briefingTitle   : titre écran briefing
-     * - briefingText    : texte mission/consigne à lire APRÈS la bonne réponse
-     *
-     * - destinationTitle: titre écran destination
-     * - destinationText : texte qui dit où aller ensuite
-     */
-
     const STEPS = {
       "1": {
         riddleTitle: "Énigme #1",
         riddleQuestion: "Je parle sans bouche et j'entends sans oreilles. Je n'ai pas de corps, mais je prends vie avec le vent. Qui suis-je ?",
         hint: "Pense au son qui revient quand tu cries dans une grotte.",
         answers: ["echo", "l'echo", "l echo", "echo."],
-
         briefingTitle: "Briefing #1",
-        briefingText: "Bravo. Voici votre mission secrète : trouvez le mot de passe gravé sous le banc rouge. Vous en aurez besoin plus tard. Ne le dites pas aux autres équipes.",
-
+        briefingText: "Bravo. Voici votre mission secrète : trouvez le mot de passe gravé sous le banc rouge.",
         destinationTitle: "Destination suivante",
-        destinationText: "Rendez-vous sous l'arche en pierre près de la fontaine. C'est là-bas que commence l'étape 2."
-      },
-
-      "2": {
-        riddleTitle: "Énigme #2",
-        riddleQuestion: "Plus je suis grand, moins tu me vois. Qui suis-je ?",
-        hint: "C'est l'absence de lumière.",
-        answers: ["obscurite","l'obscurite","la nuit","nuit"],
-
-        briefingTitle: "Briefing #2",
-        briefingText: "OK équipe. Vous devez maintenant allumer la lampe torche et prendre une photo du symbole caché. Gardez-la, elle prouvera que vous êtes passés ici.",
-
-        destinationTitle: "Destination suivante",
-        destinationText: "Allez jusqu'au grand lampadaire au bout de l'allée. Le QR code de l'étape 3 vous attend là-bas."
+        destinationText: "Rendez-vous sous l'arche en pierre près de la fontaine. C'est là-bas que commence l'étape 2.",
+        destHint: "Cherchez une arche en pierre où le son résonne."
       }
     };
 
-    // ========= UTILITAIRES =========
+    function normalize(s){return (s||"").toString().trim().toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu,"").replace(/[^a-z0-9'\s.-]/g,"").replace(/\s+/g," ");}
+    function confetti(){const c=document.querySelector('#confetti');c.innerHTML='';const colors=['#7c5cff','#22c55e','#3b82f6','#f59e0b','#ef4444'];for(let i=0;i<40;i++){const el=document.createElement('i');el.style.left=Math.random()*100+'%';el.style.bottom='0';el.style.setProperty('--x',(Math.random()*120-60)+'px');el.style.background=colors[i%colors.length];el.style.animationDelay=(Math.random()*0.35)+'s';c.appendChild(el);}}
 
-    // Nettoie la réponse pour comparer
-    function normalize(s){
-      return (s || "")
-        .toString()
-        .trim()
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/\p{Diacritic}/gu, "") // enlève les accents
-        .replace(/[^a-z0-9'\s.-]/g,"")
-        .replace(/\s+/g," ");
-    }
+    const qs=new URLSearchParams(location.search);const STEP_KEY=qs.get('step')||"1";const STEP=STEPS[STEP_KEY];
+    const stepLabelEl=document.querySelector('#stepLabel');const screenTitleEl=document.querySelector('#screenTitle');const screenSubtitleEl=document.querySelector('#screenSubtitle');const scrRiddle=document.querySelector('#screen-riddle');const scrBriefing=document.querySelector('#screen-briefing');const scrDest=document.querySelector('#screen-destination');const riddleTextEl=document.querySelector('#riddleText');const answerInput=document.querySelector('#answer');const submitBtn=document.querySelector('#submitAnswer');const attemptsEl=document.querySelector('#attempts');const hintBtn=document.querySelector('#hintBtn');const msgEl=document.querySelector('#msg');const briefingTextEl=document.querySelector('#briefingText');const goToDestinationBtn=document.querySelector('#goToDestination');const destTextEl=document.querySelector('#destinationText');const destHintBtn=document.querySelector('#destHintBtn');const destMsg=document.querySelector('#destMsg');
 
-    // Gestion confettis
-    function confetti(){
-      const c = document.querySelector('#confetti');
-      c.innerHTML = '';
-      const colors = ['#7c5cff','#22c55e','#3b82f6','#f59e0b','#ef4444'];
-      for(let i=0;i<40;i++){
-        const el = document.createElement('i');
-        el.style.left = Math.random()*100+'%';
-        el.style.bottom = '0';
-        el.style.setProperty('--x', (Math.random()*120-60)+'px');
-        el.style.background = colors[i%colors.length];
-        el.style.animationDelay = (Math.random()*0.35)+'s';
-        c.appendChild(el);
-      }
-    }
+    let attempts=0;
 
-    // ========= RÉCUP PARAMÈTRES D'URL =========
-    const qs = new URLSearchParams(location.search);
-    const STEP_KEY = qs.get('step') || "1";
-    const STEP = STEPS[STEP_KEY];
+    if(!STEP){document.querySelector('#card').innerHTML=`<h1>Étape inconnue</h1><p>Le paramètre <code>?step=${STEP_KEY}</code> ne correspond à aucune énigme.</p>`;throw new Error('STEP not found');}
 
-    // Récup éléments DOM communs
-    const stepLabelEl = document.querySelector('#stepLabel');
-    const screenTitleEl = document.querySelector('#screenTitle');
-    const screenSubtitleEl = document.querySelector('#screenSubtitle');
-    const footerInfoEl = document.querySelector('#footerInfo');
+    function showScreenRiddle(){scrRiddle.classList.add('active');scrBriefing.classList.remove('active');scrDest.classList.remove('active');stepLabelEl.textContent=STEP_KEY;screenTitleEl.textContent=STEP.riddleTitle;screenSubtitleEl.textContent="Résolvez l'énigme pour débloquer la suite.";riddleTextEl.textContent=STEP.riddleQuestion;msgEl.textContent="";msgEl.className="msg";attempts=0;attemptsEl.textContent="0 tentative";}
+    function showScreenBriefing(){scrRiddle.classList.remove('active');scrBriefing.classList.add('active');scrDest.classList.remove('active');screenTitleEl.textContent=STEP.briefingTitle;screenSubtitleEl.textContent="Lisez bien ces instructions.";briefingTextEl.textContent=STEP.briefingText;}
+    function showScreenDestination(){scrRiddle.classList.remove('active');scrBriefing.classList.remove('active');scrDest.classList.add('active');screenTitleEl.textContent=STEP.destinationTitle;screenSubtitleEl.textContent="Voici où aller maintenant.";destTextEl.textContent=STEP.destinationText;}
 
-    // Sections / écrans
-    const scrRiddle = document.querySelector('#screen-riddle');
-    const scrBriefing = document.querySelector('#screen-briefing');
-    const scrDest = document.querySelector('#screen-destination');
+    function checkAnswer(){const userVal=normalize(answerInput.value);const isGood=(STEP.answers||[]).some(ans=>normalize(ans)===userVal);attempts++;attemptsEl.textContent=`${attempts} ${attempts>1?'tentatives':'tentative'}`;if(isGood){msgEl.textContent="✅ Bonne réponse !";msgEl.className="msg ok";answerInput.setAttribute('disabled','');submitBtn.setAttribute('disabled','');confetti();setTimeout(()=>{showScreenBriefing();},600);}else{msgEl.textContent="❌ Mauvaise réponse. Réessayez.";msgEl.className="msg err";answerInput.focus();}}
+    function showHint(){if(STEP.hint){msgEl.textContent="💡 Indice : "+STEP.hint;msgEl.className="msg";}else{msgEl.textContent="Aucun indice pour cette étape.";msgEl.className="msg";}}
+    function showDestHint(){if(STEP.destHint){destMsg.textContent="💡 Indice : "+STEP.destHint;destMsg.className="msg";}else{destMsg.textContent="Aucun indice pour cette destination.";destMsg.className="msg";}}
+    function goDestination(){showScreenDestination();}
 
-    // Riddle elems
-    const riddleTextEl = document.querySelector('#riddleText');
-    const answerInput = document.querySelector('#answer');
-    const submitBtn = document.querySelector('#submitAnswer');
-    const attemptsEl = document.querySelector('#attempts');
-    const hintBtn = document.querySelector('#hintBtn');
-    const msgEl = document.querySelector('#msg');
+    submitBtn.addEventListener('click',checkAnswer);answerInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();checkAnswer();}});hintBtn.addEventListener('click',showHint);goToDestinationBtn.addEventListener('click',goDestination);destHintBtn.addEventListener('click',showDestHint);
 
-    // Briefing elems
-    const briefingTextEl = document.querySelector('#briefingText');
-    const goToDestinationBtn = document.querySelector('#goToDestination');
-
-    // Destination elems
-    const destTextEl = document.querySelector('#destinationText');
-
-    // petit état interne
-    let attempts = 0;
-    let currentScreen = "riddle"; // "riddle" -> "briefing" -> "destination"
-
-    // sécurité simple : si step inconnu
-    if(!STEP){
-      document.querySelector('#card').innerHTML = `
-        <h1>Étape inconnue</h1>
-        <p>Le paramètre <code>?step=${STEP_KEY}</code> ne correspond à aucune énigme.</p>`;
-      throw new Error('STEP not found');
-    }
-
-    // ========= INIT ÉCRAN ÉNIGME =========
-    function showScreenRiddle(){
-      currentScreen = "riddle";
-      scrRiddle.classList.add('active');
-      scrBriefing.classList.remove('active');
-      scrDest.classList.remove('active');
-
-      stepLabelEl.textContent = STEP_KEY;
-      screenTitleEl.textContent = STEP.riddleTitle;
-      screenSubtitleEl.textContent = "Résolvez l'énigme suivante afin de découvrir une partie du code.";
-      riddleTextEl.textContent = STEP.riddleQuestion;
-
-      msgEl.textContent = "";
-      msgEl.className = "msg";
-      attempts = 0;
-      attemptsEl.textContent = "0 tentative";
-
-    }
-
-    // ========= INIT ÉCRAN BRIEFING =========
-    function showScreenBriefing(){
-      currentScreen = "briefing";
-      scrRiddle.classList.remove('active');
-      scrBriefing.classList.add('active');
-      scrDest.classList.remove('active');
-
-      screenTitleEl.textContent = STEP.briefingTitle;
-      screenSubtitleEl.textContent = "Bravo ! Vous venez de débloquer un des quatres chiffres composant le code mystère.";
-      briefingTextEl.textContent = STEP.briefingText;
-
-      footerInfoEl.textContent = "Gardez pour vous ce pas en plus vers le Sac d'Or Blanc 😉";
-    }
-
-    // ========= INIT ÉCRAN DESTINATION =========
-    function showScreenDestination(){
-      currentScreen = "destination";
-      scrRiddle.classList.remove('active');
-      scrBriefing.classList.remove('active');
-      scrDest.classList.add('active');
-
-      screenTitleEl.textContent = STEP.destinationTitle;
-      screenSubtitleEl.textContent = "Rendez-vous maintenant à l'étape suivante :";
-      destTextEl.textContent = STEP.destinationText;
-
-      footerInfoEl.textContent = "N'oubliez pas d'utiliser la carte a votre disposition afin d'identifié votre prochaine destination.";
-    }
-
-    // ========= LOGIQUE VALIDATION RÉPONSE =========
-    function checkAnswer(){
-      const userVal = normalize(answerInput.value);
-      const isGood = (STEP.answers || []).some(ans => normalize(ans) === userVal);
-
-      attempts++;
-      attemptsEl.textContent = `${attempts} ${attempts>1?'tentatives':'tentative'}`;
-
-      if(isGood){
-        msgEl.textContent = "✅ Bonne réponse !";
-        msgEl.className = "msg ok";
-        answerInput.setAttribute('disabled','');
-        submitBtn.setAttribute('disabled','');
-        confetti();
-
-        // on passe à l'écran briefing après un très court délai visuel
-        setTimeout(()=>{
-          showScreenBriefing();
-        }, 600);
-
-      } else {
-        msgEl.textContent = "❌ Mauvaise réponse. Réessayez.";
-        msgEl.className = "msg err";
-        answerInput.focus();
-      }
-    }
-
-    // ========= BOUTON INDICE =========
-    function showHint(){
-      if(STEP.hint){
-        msgEl.textContent = "💡 Indice : " + STEP.hint;
-        msgEl.className = "msg";
-      } else {
-        msgEl.textContent = "Aucun indice pour cette étape.";
-        msgEl.className = "msg";
-      }
-    }
-
-    // ========= BOUTON 'Voir la prochaine étape' (briefing → destination) =========
-    function goDestination(){
-      showScreenDestination();
-    }
-
-    // ========= Brancher les events =========
-    submitBtn.addEventListener('click', checkAnswer);
-    answerInput.addEventListener('keydown', e=>{
-      if(e.key === 'Enter'){
-        e.preventDefault();
-        checkAnswer();
-      }
-    });
-    hintBtn.addEventListener('click', showHint);
-    goToDestinationBtn.addEventListener('click', goDestination);
-
-    // Au chargement : on commence par l'écran énigme
     showScreenRiddle();
   </script>
 </body>
