@@ -45,6 +45,12 @@
     h1{font-size:clamp(1.4rem,1.1rem+2vw,2.2rem);margin:12px 0 4px;letter-spacing:.3px}
     .subtitle{color:var(--muted);margin:0 0 16px;font-size:1rem;line-height:1.4}
     .riddle{font-size:1.125rem;line-height:1.6;margin:16px 0 18px}
+    .riddleImg {
+  width: 100%;
+  border-radius: 16px;
+  margin: 12px 0;
+  box-shadow: 0 8px 24px rgba(0,0,0,.35);
+}
 
     .inputRow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
     input[type=text]{flex:1;min-width:200px;padding:14px 14px;border-radius:12px;border:1px solid rgba(124,92,255,.25);outline:0;font-size:1rem;background:transparent;color:var(--fg);box-shadow:0 0 0 0 rgba(0,0,0,0)}
@@ -80,7 +86,7 @@
 
       <!-- Écran 1 : Énigme -->
       <section id="screen-riddle" class="section">
-        <p class="riddle" id="riddleText">Chargement…</p>
+        <div id="riddleContent"></div>
         <div class="inputRow">
           <label class="sr-only" for="answer">Votre réponse</label>
           <input id="answer" type="text" autocomplete="off" placeholder="Votre réponse" />
@@ -139,6 +145,8 @@
         // Écran énigme
         riddleTitle: "Énigme #1",
         riddleQuestion: "Je parle sans bouche et j'entends sans oreilles. Je n'ai pas de corps, mais je prends vie avec le vent. Qui suis-je ?",
+        // riddleImage:
+        // riddleAudio:
         hint: "Pense au son qui revient quand tu cries dans une grotte.",
         answers: ["echo", "l'echo", "l echo", "echo."],
 
@@ -160,7 +168,9 @@
 
         // Écran énigme
         riddleTitle: "Énigme #2",
-        riddleQuestion: "Je parle sans bouche et j'entends sans oreilles. Je n'ai pas de corps, mais je prends vie avec le vent. Qui suis-je ?",
+        // riddleQuestion: "Je parle sans bouche et j'entends sans oreilles. Je n'ai pas de corps, mais je prends vie avec le vent. Qui suis-je ?",
+        riddleImage: "https://upload.wikimedia.org/wikipedia/commons/3/3b/Chene_majestic.jpg"
+        // riddleAudio:
         hint: "Pense au son qui revient quand tu cries dans une grotte.",
         answers: ["echo", "l'echo", "l echo", "echo."],
 
@@ -250,7 +260,34 @@
 
       screenTitleEl.textContent = STEP.riddleTitle;
       screenSubtitleEl.textContent = "Résolvez l'énigme pour débloquer la suite.";
-      riddleTextEl.textContent = STEP.riddleQuestion;
+      const riddleContent = document.querySelector('#riddleContent');
+riddleContent.innerHTML = "";
+
+// Texte
+if (STEP.riddleQuestion) {
+  const p = document.createElement('p');
+  p.className = "riddle";
+  p.textContent = STEP.riddleQuestion;
+  riddleContent.appendChild(p);
+}
+
+// Image
+if (STEP.riddleImage) {
+  const img = document.createElement('img');
+  img.src = STEP.riddleImage;
+  img.alt = "Énigme visuelle";
+  img.className = "riddleImg";
+  riddleContent.appendChild(img);
+}
+
+// Audio
+if (STEP.riddleAudio) {
+  const audio = document.createElement('audio');
+  audio.controls = true;
+  audio.src = STEP.riddleAudio;
+  audio.style.marginTop = "12px";
+  riddleContent.appendChild(audio);
+}
 
       msgEl.textContent="";
       msgEl.className="msg";
